@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Diabetes App</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    #chatbot-container {
+      display: none;
+      position: fixed;
+      bottom: 70px;
+      right: 20px;
+      width: 300px;
+      height: 400px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      flex-direction: column;
+      display: flex;
+      z-index: 1000;
+    }
+    #chatbot-messages {
+      flex-grow: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    #chatbot-header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      font-weight: bold;
+    }
+    #chatbot-form {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #chatbot-input {
+      flex-grow: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 0 0 0 8px;
+    }
+    #chatbot-form button {
+      padding: 8px 12px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 0 0 8px 0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Welcome, {{ user }}</h2>
+  <a href="/predict-form">Open Diabetes Prediction Form</a><br><br>
+  <a href="/history">View Past Results</a><br><br>
+  <a href="/logout">Logout</a>
+
+  <!-- Chatbot Toggle Button -->
+  <button id="chatbot-toggle"
+          style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 15px; border-radius: 50%; background-color: #007bff; color: white; border: none; cursor: pointer;">
+    💬
+  </button>
+
+  <!-- Chatbot UI -->
+  <div id="chatbot-container">
+    <div id="chatbot-header">
+      Diabetes Chatbot
+      <button id="chatbot-close"
+              style="float:right; background:none; border:none; color:white; font-weight: bold; cursor: pointer;">×</button>
+    </div>
+    <div id="chatbot-messages"></div>
+    <form id="chatbot-form">
+      <input type="text" id="chatbot-input" placeholder="Type your message..." autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('chatbot-toggle');
+      const chatbot = document.getElementById('chatbot-container');
+      const closeBtn = document.getElementById('chatbot-close');
+      const form = document.getElementById('chatbot-form');
+      const input = document.getElementById('chatbot-input');
+      const messages = document.getElementById('chatbot-messages');
+
+      // Show chatbot
+      toggleBtn.addEventListener('click', () => {
+        chatbot.style.display = 'flex';
+        input.focus();
+      });
+
+      // Hide chatbot
+      closeBtn.addEventListener('click', () => {
+        chatbot.style.display = 'none';
+      });
+
+      function appendMessage(sender, text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.style.marginBottom = '10px';
+        msgDiv.style.padding = '8px 12px';
+        msgDiv.style.borderRadius = '12px';
+        msgDiv.style.maxWidth = '80%';
+        msgDiv.style.wordWrap = 'break-word';
+
+        if (sender === 'user') {
+          msgDiv.style.backgroundColor = '#007bff';
+          msgDiv.style.color = 'white';
+          msgDiv.style.marginLeft = 'auto';
+        } else {
+          msgDiv.style.backgroundColor = '#f1f0f0';
+          msgDiv.style.color = '#333';
+          msgDiv.style.marginRight = 'auto';
+        }
+
+        msgDiv.textContent = text;
+        messages.appendChild(msgDiv);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userMessage = input.value.trim();
+        if (!userMessage) return;
+
+        appendMessage('user', userMessage);
+        input.value = '';
+        input.disabled = true;
+
+        try {
+          const response = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+          });
+
+          const data = await response.json();
+          appendMessage('bot', data.response || 'No reply received.');
+        } catch (error) { // <--- THIS IS THE KEY PART
+          appendMessage('bot', 'Sorry, something went wrong.');
+        } finally {
+          input.disabled = false;
+          input.focus();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

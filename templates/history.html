@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History</title>
+</head>
+<body>
+    <h2>Your Prediction History</h2>
+    {% if results %}
+        <ul>
+            {% for item in results %}
+                <li>
+                    Date: {{ item.timestamp }} — Result: {{ item.result }} <br>
+                    Details: Pregnancies={{ item.input.Pregnancies }}, Glucose={{ item.input.Glucose }}, BloodPressure={{ item.input.BloodPressure }}, SkinThickness={{ item.input.SkinThickness }}, Insulin={{ item.input.Insulin }}, BMI={{ item.input.BMI }}, DiabetesPedigreeFunction={{ item.input.DiabetesPedigreeFunction }}, Age={{ item.input.Age }}
+                </li><br>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No history found.</p>
+    {% endif %}
+    <a href="/home">Back to Home</a>
+</body>
+</html>

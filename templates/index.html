@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>3D Diabetes Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="background-animation"></div>
+
+    <!-- Form Container -->
+    <div class="container">
+        <div class="form-box">
+            <h1 class="title">Diabetes Prediction</h1>
+            <p class="subtitle">Enter your details to check your risk</p>
+
+            <form action="{{ url_for('predict') }}" method="post">
+                <input type="number" name="Pregnancies" placeholder="Number of Pregnancies" required>
+                <input type="number" step="0.1" name="Glucose" placeholder="Glucose Level" required>
+                <input type="number" step="0.1" name="BloodPressure" placeholder="Blood Pressure" required>
+                <input type="number" step="0.1" name="SkinThickness" placeholder="Skin Thickness" required>
+                <input type="number" step="0.1" name="Insulin" placeholder="Insulin Level" required>
+                <input type="number" step="0.1" name="BMI" placeholder="Body Mass Index (BMI)" required>
+                <input type="number" step="0.01" name="DiabetesPedigreeFunction" placeholder="Diabetes Pedigree Function" required>
+                <input type="number" name="Age" placeholder="Age" required>
+                <button type="submit">Predict</button>
+            </form>
+
+            <h2 id="prediction-text">{{ prediction_text or '' }}</h2>
+        </div>
+    </div>
+
+</body>
+</html>

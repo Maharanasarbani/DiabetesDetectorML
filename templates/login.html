@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // Import the functions you need from Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB33pCfcij3l8vOykXv4-wEHoxWu3VyULQ",
+      authDomain: "diabetisprediction.firebaseapp.com",
+      projectId: "diabetisprediction",
+      storageBucket: "diabetisprediction.firebasestorage.app",
+      messagingSenderId: "6305384358",
+      appId: "1:6305384358:web:484245919184f751b2f167",
+      measurementId: "G-V62QKSLM46"
+    };
+
+    // Initialize Firebase app
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Sign in function exposed globally
+    window.signInWithGoogle = () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then(result => {
+          const email = result.user.email;
+          // Send user email to your backend
+          fetch('/set_user', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email })
+          }).then(() => {
+            window.location.href = '/home';
+          });
+        })
+        .catch(error => {
+          alert("Login failed: " + error.message);
+          console.error(error);
+        });
+    };
+  </script>
+</head>
+<body>
+  <h2>Login with Google</h2>
+  <button onclick="signInWithGoogle()">Login</button>
+</body>
+</html>
